@@ -1125,8 +1125,10 @@ className="aboutProject"
                 placeholder="Type your question..."
                 autoComplete="off"
                 autoCorrect="off"
+                autoCapitalize="off"
                 spellCheck={false}
-                name="message"
+                inputMode="text"
+                name="input-dont-autofill"
                 onKeyDown={e => {
                   if (e.key === "Enter") {
                     handleChatSubmit(e);
@@ -1142,6 +1144,7 @@ className="aboutProject"
                   fontSize: '12px'
                 }}
               />
+
               <button
                 type="submit"
                 onClick={handleChatSubmit}
