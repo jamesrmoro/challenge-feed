@@ -1122,6 +1122,7 @@ className="aboutProject"
                 autoComplete="off"
                 autoCorrect="off"
                 spellCheck={false}
+                name="chat-ai"
                 style={{
                   width: '100%',
                   padding: '0.6rem 3rem 0.6rem 0.6rem',
