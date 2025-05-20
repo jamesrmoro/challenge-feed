@@ -480,11 +480,14 @@ export default function Home() {
   };
 
   const handleChatSubmit = async (e) => {
-    e.preventDefault();
+    if (e && e.preventDefault) e.preventDefault();
+
     if (!chatInput.trim()) return;
     const question = chatInput.trim();
+
     setChatLog(prev => [...prev, { question, answer: '⏳ Consulting...' }]);
     setChatInput('');
+
     const res = await fetch('/api/ask', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -497,6 +500,7 @@ export default function Home() {
       return updated;
     });
   };
+
 
   return (
     <>
@@ -1112,7 +1116,7 @@ className="aboutProject"
                 </div>
               ))}
             </div>
-            <form autoComplete="off" onSubmit={handleChatSubmit} style={{ position: 'relative' }}>
+            <div style={{ position: 'relative' }}>
               <input
                 id="chatInput"
                 type="text"
@@ -1135,6 +1139,7 @@ className="aboutProject"
               />
               <button
                 type="submit"
+                onClick={handleChatSubmit}
                 style={{
                   position: 'absolute',
                   top: '50%',
@@ -1157,7 +1162,7 @@ className="aboutProject"
                   }}
                 />
               </button>
-            </form>
+            </div>
           </div>
         </div>
       )}
