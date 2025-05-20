@@ -25,6 +25,10 @@ export default function Home() {
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
   const [initialLoading, setInitialLoading] = useState(true);
 
+  const [showSidePanel, setShowSidePanel] = useState(false);
+
+
+
   const [user, setUser] = useState(null);
   const [loginError, setLoginError] = useState('');
   const [loginForm, setLoginForm] = useState({ email: '', password: '' });
@@ -499,12 +503,68 @@ export default function Home() {
       <Script src="/assets/js/swiper-bundle.min.js" strategy="beforeInteractive" />
       <Script src="/assets/js/stories-slider.js" strategy="afterInteractive" />
 
+      {/* BOTÃO FLUTUANTE SUPERIOR DIREITO */}
+<button
+className="aboutProject"
+  aria-label="Abrir painel"
+  onClick={() => setShowSidePanel(true)}
+>
+  <img src="/assets/icons/arrow.svg" alt="Abrir painel" />
+</button>
+
+<div
+  style={{
+    position: 'fixed',
+    top: 0,
+    right: 0,
+    width: 340,
+    maxWidth: '100vw',
+    height: '100vh',
+    background: '#181d25',
+    color: '#fff',
+    zIndex: 99998,
+    boxShadow: '-6px 0 24px rgba(0,0,0,0.19)',
+    transform: showSidePanel ? 'translateX(0)' : 'translateX(105%)',
+    transition: 'transform 0.38s cubic-bezier(.74,.04,.38,1.03)',
+    display: 'flex',
+    flexDirection: 'column'
+  }}
+>
+  <button
+    onClick={() => setShowSidePanel(false)}
+    style={{
+      alignSelf: 'flex-end',
+      background: 'none',
+      border: 'none',
+      color: '#fff',
+      fontSize: 28,
+      padding: '16px 18px 6px 12px',
+      cursor: 'pointer',
+      opacity: 0.7
+    }}
+    aria-label="Close"
+    tabIndex={showSidePanel ? 0 : -1}
+  >×</button>
+  <div style={{ padding: '18px 30px 18px 26px' }}>
+    <h2 style={{ margin: '0 0 18px 0', fontWeight: 700, fontSize: '1.35rem' }}>
+      About Project
+    </h2>
+    <div className="aboutProjectText">
+      <p>This project was created for the <a href="https://dev.to/devteam/join-the-bright-data-real-time-ai-agents-challenge-3000-in-prizes-cog?bb=216179" target="_blank">Bright Data Real-Time AI Agents Challenge</a> on dev.to.</p>
+      <p>Besides participating in the challenge, this project also serves an educational purpose by showing how to collect, process, and display real-time data using Bright Data.</p>
+      <p>For demonstration, only two sites are featured: Itch.io and Dev.to.</p>
+      <p>You can check out the full article about this project on <a href="https://dev.to" target="_blank">dev.to</a>.</p>
+    </div>
+  </div>
+</div>
+
+
       {user && (
         <div
           className="updatedChallenges"
           onClick={updateJams}
         >
-          {loading ? '⏳ Atualizando...' : '🔄 Atualizar Jams'}
+          {loading ? '⏳' : '🔄'}
         </div>
       )}
       {!user && showLogin && (
@@ -530,7 +590,7 @@ export default function Home() {
         </form>
       )}
       {user && (
-        <button onClick={handleLogout} style={{ position: "fixed", bottom: 10, right: 170 }}>Logout</button>
+        <button onClick={handleLogout} style={{ position: "fixed", bottom: 62, right: 10, zIndex: "222" }}>Logout</button>
       )}
 
 
@@ -541,7 +601,7 @@ export default function Home() {
             top: '55px',
             right: '10px',
             zIndex: 9999,
-            backgroundColor: '#222',
+            backgroundColor: '#4CAF50',
             color: '#fff',
             padding: '0.4rem 1rem',
             fontSize: '0.9rem'
@@ -557,7 +617,7 @@ export default function Home() {
         </div>
         <div id="message">
           <span>1</span>
-          <img src="/assets/images/message.png" alt="Message" />
+          <img src="/assets/icons/message.svg" alt="Message" />
         </div>
       </div>
 
