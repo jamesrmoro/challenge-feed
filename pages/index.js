@@ -1119,6 +1119,9 @@ className="aboutProject"
                 value={chatInput}
                 onChange={(e) => setChatInput(e.target.value)}
                 placeholder="Type your question..."
+                autoComplete="off"
+                autoCorrect="off"
+                spellCheck={false}
                 style={{
                   width: '100%',
                   padding: '0.6rem 3rem 0.6rem 0.6rem',
