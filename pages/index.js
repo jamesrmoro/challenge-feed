@@ -743,6 +743,7 @@ export default function Home() {
     </div>
   )}
 
+
   {/* MENSAGEM QUANDO CARREGA TUDO */}
   {visibleCount >= allPosts.length && allPosts.length > 0 && (
     <div style={{ textAlign: 'center', padding: 16, color: '#888' }}>
