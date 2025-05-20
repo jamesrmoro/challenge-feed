@@ -1127,6 +1127,11 @@ className="aboutProject"
                 autoCorrect="off"
                 spellCheck={false}
                 name="message"
+                onKeyDown={e => {
+                  if (e.key === "Enter") {
+                    handleChatSubmit(e);
+                  }
+                }}
                 style={{
                   width: '100%',
                   padding: '0.6rem 3rem 0.6rem 0.6rem',
