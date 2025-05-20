@@ -1,15 +1,41 @@
 import fs from 'fs/promises';
 import path from 'path';
 import axios from 'axios';
-import { Client, Databases, ID, Query } from 'node-appwrite';
+import { Client, Databases, ID, Query, Account } from 'node-appwrite';
 
 // Mapeie aqui os coletores e seus nomes amigáveis:
 const collectorMap = {
-  [process.env.BRIGHT_COLLECTOR1]: 'site-dev.to', // Substitua pelo nome visível no painel
-  [process.env.BRIGHT_COLLECTOR2]: 'site-itch.io', // Substitua pelo nome visível no painel
+  [process.env.BRIGHT_COLLECTOR1]: 'site-dev.to',
+  [process.env.BRIGHT_COLLECTOR2]: 'site-itch.io',
 };
 
 export default async function handler(req, res) {
+  // ---- AUTENTICAÇÃO JWT APPWRITE ----
+  const jwt = req.headers.authorization?.replace('Bearer ', '');
+  if (!jwt) {
+    return res.status(401).json({ error: 'Unauthorized: missing JWT' });
+  }
+
+  const client = new Client()
+    .setEndpoint(process.env.APPWRITE_ENDPOINT)
+    .setProject(process.env.APPWRITE_PROJECT_ID);
+
+  const account = new Account(client);
+
+  let user;
+  try {
+    client.setJWT(jwt);
+    user = await account.get();
+    // Se quiser filtrar só admin, adicione abaixo:
+    // if (user.email !== 'admin@seudominio.com') {
+    //   return res.status(403).json({ error: 'Forbidden: not admin' });
+    // }
+  } catch (e) {
+    return res.status(401).json({ error: 'Invalid or expired JWT', details: e.message });
+  }
+  // ---- FIM AUTENTICAÇÃO ----
+
+  // Resto do código igual ao original
   const token = process.env.BRIGHT_TOKEN;
   const collectors = [
     process.env.BRIGHT_COLLECTOR1,
@@ -21,12 +47,6 @@ export default async function handler(req, res) {
     'Content-Type': 'application/json',
   };
 
-  // Inicializa Appwrite
-  const client = new Client()
-    .setEndpoint(process.env.APPWRITE_ENDPOINT)
-    .setProject(process.env.APPWRITE_PROJECT_ID)
-    .setKey(process.env.APPWRITE_API_KEY);
-
   const databases = new Databases(client);
   const databaseId = process.env.APPWRITE_DATABASE_ID;
   const collectionId = process.env.APPWRITE_COLLECTION_ID;
@@ -35,7 +55,7 @@ export default async function handler(req, res) {
     const allResults = [];
 
     for (const [idx, collector] of collectors.entries()) {
-      const collectorName = collectorMap[collector] || collector; // fallback para o ID caso não mapeado
+      const collectorName = collectorMap[collector] || collector;
 
       console.log(`🔹 [${idx + 1}/${collectors.length}] Disparando coletor: ${collectorName} (${collector})`);
       const triggerRes = await axios.post(
@@ -85,7 +105,7 @@ export default async function handler(req, res) {
 
     console.log(`📊 ${uniqueResults.length} dados únicos coletados.`);
 
-    // 🔁 Gravar no Appwrite: se já existir, atualizar; senão, criar novo
+    // Gravar no Appwrite: se já existir, atualizar; senão, criar novo
     let writtenCount = 0;
     let updatedCount = 0;
 
@@ -112,11 +132,11 @@ export default async function handler(req, res) {
       }
     }
 
-    // 🧹 REMOVER URLs que não estão mais nos dados coletados!
+    // Remover URLs que não estão mais nos dados coletados!
     const urlsValidas = uniqueResults.map(item => item.url);
     try {
       const todosDocs = await databases.listDocuments(databaseId, collectionId, [
-        Query.limit(2000) // ajuste se tiver muitos docs
+        Query.limit(2000)
       ]);
       const docs = todosDocs.documents;
       const docsParaApagar = docs.filter(doc => !urlsValidas.includes(doc.url));
@@ -137,7 +157,7 @@ export default async function handler(req, res) {
       console.warn('⚠️ Falha ao buscar/apagar docs antigos:', err.message);
     }
 
-    // 💾 Salvar também em jams.json
+    // Salvar também em jams.json
     const filePath = path.join(process.cwd(), 'public', 'jams.json');
     await fs.writeFile(filePath, JSON.stringify(uniqueResults, null, 2), 'utf-8');
 

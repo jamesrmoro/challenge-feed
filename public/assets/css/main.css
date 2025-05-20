@@ -137,6 +137,107 @@
   position: relative;
 }
 
+.button-view-more-purple {
+  padding: 10px 20px;
+  background: linear-gradient(90deg, #a600ff 0%, #ff2be6 100%);
+  color: #fff;
+  font-weight: bold;
+  border: none;
+  border-radius: 32px;
+  font-size: 12px;
+  letter-spacing: 1.5px;
+  cursor: pointer;
+  box-shadow:
+    0 0 8px #a600ff,
+    0 0 24px #ff2be6,
+    0 0 48px #ff2be6;
+  position: relative;
+  transition: background 0.25s, color 0.18s, box-shadow 0.22s, transform 0.12s;
+  animation: neonPulsePurple 1.2s infinite alternate;
+  outline: none;
+  z-index: 2;
+  overflow: hidden;
+}
+
+@keyframes neonPulsePurple {
+  0% {
+    box-shadow:
+      0 0 8px #a600ff,
+      0 0 24px #ff2be6,
+      0 0 48px #a600ff,
+      0 0 0 #fff0;
+    transform: scale(1);
+    filter: brightness(1.12) saturate(1.15);
+  }
+  70% {
+    box-shadow:
+      0 0 16px #ff2be6,
+      0 0 48px #a600ff,
+      0 0 96px #ff2be6,
+      0 0 24px #fff3;
+    filter: brightness(1.35) saturate(1.22);
+    transform: scale(1.045);
+  }
+  100% {
+    box-shadow:
+      0 0 28px #ff2be6,
+      0 0 56px #a600ff,
+      0 0 120px #fff,
+      0 0 32px #fff6;
+    filter: brightness(1.4) saturate(1.3);
+    transform: scale(1.07);
+  }
+}
+
+.button-view-more-purple:hover,
+.button-view-more-purple:focus {
+  background: linear-gradient(90deg, #ff2be6 0%, #a600ff 100%);
+  color: #fff;
+  filter: brightness(1.4) saturate(1.25);
+  transform: scale(1.08);
+  box-shadow:
+    0 0 40px #ff2be6,
+    0 0 100px #a600ff,
+    0 0 180px #fff;
+  outline: none;
+}
+
+.button-view-more-purple:active {
+  transform: scale(0.97);
+  box-shadow: 0 0 18px #a600ff, 0 0 48px #ff2be6, 0 0 96px #fff3;
+}
+
+
+.updatedChallenges {
+
+  position: fixed;
+  bottom: 10px;
+  right: 10px;
+  z-index: 9999;
+  background-color: #0070f3;
+  color: #fff;
+  border: none;
+  padding: 0.6rem 1rem;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+  opacity: 1;
+  transition: all 0.3s ease;
+}
+
+.loginForm {
+
+    position: fixed;
+    bottom: 10px;
+    right: 10px;
+    background: #fff;
+    padding: 12px;
+    z-index: 333;
+    width: 80%;
+    border: 1px solid red;
+    left: 0;
+    margin: 0 auto;
+}
+
 #messageChat ol li, #messageChat ul li {
 
   margin-bottom: 5px;

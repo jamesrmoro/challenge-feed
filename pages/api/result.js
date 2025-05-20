@@ -6,6 +6,7 @@ export default async function handler(req, res) {
     project: process.env.APPWRITE_PROJECT_ID,
     db: process.env.APPWRITE_DATABASE_ID,
     collection: process.env.APPWRITE_COLLECTION_ID,
+    key: !!process.env.APPWRITE_API_KEY
   });
 
   const client = new Client()

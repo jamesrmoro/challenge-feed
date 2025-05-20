@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import Script from 'next/script';
 import ReactMarkdown from 'react-markdown';
+import { Client, Account } from "appwrite";
+import { useRouter } from 'next/router'; // Next.js way
 
 export default function Home() {
   const [shareVisible, setShareVisible] = useState(false);
@@ -22,6 +24,45 @@ export default function Home() {
   const PAGE_SIZE = 15;
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
   const [initialLoading, setInitialLoading] = useState(true);
+
+  const [user, setUser] = useState(null);
+  const [loginError, setLoginError] = useState('');
+  const [loginForm, setLoginForm] = useState({ email: '', password: '' });
+  const [showLogin, setShowLogin] = useState(false);
+
+  const router = useRouter();
+
+  useEffect(() => {
+    // Pegue o parâmetro da url (no client-side)
+    if (router.isReady) {
+      if (router.query.login === '1') {
+        setShowLogin(true);
+      }
+    }
+  }, [router.isReady, router.query.login]);
+
+  // Checar sessão no carregamento
+  useEffect(() => {
+    account.get().then(setUser).catch(() => setUser(null));
+  }, []);
+
+  // Login
+  async function handleLogin(e) {
+    e.preventDefault();
+    setLoginError('');
+    try {
+      await account.createEmailPasswordSession(loginForm.email, loginForm.password);
+      const user = await account.get();
+      setUser(user);
+    } catch (err) {
+      setLoginError('Login failed');
+    }
+  }
+  // Logout
+  async function handleLogout() {
+    await account.deleteSession('current');
+    setUser(null);
+  }
 
   const avatarCovers = {
     'itch.io': '/assets/covers/itchio.png',
@@ -296,11 +337,36 @@ export default function Home() {
       setMessage('Erro ao carregar dados.');
     }
   };
+
+  const client = new Client()
+    .setEndpoint(process.env.NEXT_PUBLIC_APPWRITE_ENDPOINT)
+    .setProject(process.env.NEXT_PUBLIC_APPWRITE_PROJECT_ID);
+  const account = new Account(client);
+
+  async function doLogin(email, password) {
+    try {
+      await account.deleteSession('current').catch(() => {});
+      await account.createEmailPasswordSession(email, password);
+      const user = await account.get();
+      alert("Login OK! Usuário: " + user.email);
+    } catch (e) {
+      alert("Erro: " + e.message); // Aqui mostra se é "Invalid credentials", "User not found", etc.
+    }
+  }
+
   const updateJams = async () => {
     setLoading(true);
     setMessage('Atualizando...');
     try {
-      const res = await fetch('/api/update');
+      // Gera o JWT SÓ DENTRO DA FUNÇÃO
+      const jwt = await account.createJWT();
+
+      const res = await fetch('/api/update', {
+        headers: {
+          'Authorization': `Bearer ${jwt.jwt}`, // jwt.jwt pega o token string do objeto retornado
+          'Content-Type': 'application/json'
+        }
+      });
       const json = await res.json();
       setMessage(`Dados atualizados: ${json.count || 0} itens.`);
       await fetchJams();
@@ -310,6 +376,7 @@ export default function Home() {
       setLoading(false);
     }
   };
+
 
   useEffect(() => {
     fetchJams();
@@ -432,25 +499,40 @@ export default function Home() {
       <Script src="/assets/js/swiper-bundle.min.js" strategy="beforeInteractive" />
       <Script src="/assets/js/stories-slider.js" strategy="afterInteractive" />
 
-      <div
-        style={{
-          position: 'fixed',
-          bottom: '10px',
-          right: '10px',
-          zIndex: 9999,
-          backgroundColor: '#0070f3',
-          color: '#fff',
-          border: 'none',
-          padding: '0.6rem 1rem',
-          boxShadow: '0 4px 8px rgba(0,0,0,0.2)',
-          cursor: loading ? 'not-allowed' : 'pointer',
-          opacity: loading ? 0.6 : 1,
-          transition: 'all 0.3s ease'
-        }}
-        onClick={updateJams}
-      >
-        {loading ? '⏳ Atualizando...' : '🔄 Atualizar Jams'}
-      </div>
+      {user && (
+        <div
+          className="updatedChallenges"
+          onClick={updateJams}
+        >
+          {loading ? '⏳ Atualizando...' : '🔄 Atualizar Jams'}
+        </div>
+      )}
+      {!user && showLogin && (
+        <form className="loginForm" onSubmit={handleLogin}>
+          <input
+            type="email"
+            placeholder="Email"
+            value={loginForm.email}
+            onChange={e => setLoginForm({ ...loginForm, email: e.target.value })}
+            required
+            style={{ marginRight: 5 }}
+          />
+          <input
+            type="password"
+            placeholder="Password"
+            value={loginForm.password}
+            onChange={e => setLoginForm({ ...loginForm, password: e.target.value })}
+            required
+            style={{ marginRight: 5 }}
+          />
+          <button type="submit">Login</button>
+          {loginError && <span style={{ color: "red", marginLeft: 8 }}>{loginError}</span>}
+        </form>
+      )}
+      {user && (
+        <button onClick={handleLogout} style={{ position: "fixed", bottom: 10, right: 170 }}>Logout</button>
+      )}
+
 
       {message && (
         <div
@@ -651,17 +733,7 @@ export default function Home() {
   {visibleCount < allPosts.length && (
     <div style={{ textAlign: 'center', padding: 24 }}>
       <button
-        style={{
-          padding: '12px 32px',
-          background: '#222',
-          color: '#fff',
-          border: 'none',
-          borderRadius: '24px',
-          fontSize: '1rem',
-          cursor: 'pointer',
-          fontWeight: 600,
-          boxShadow: '0 2px 10px #0002'
-        }}
+        className="button-view-more-purple"
         onClick={() =>
           setVisibleCount((prev) => Math.min(prev + PAGE_SIZE, allPosts.length))
         }
