@@ -7,7 +7,7 @@ export default function Document() {
       <Head>
         <link rel="icon" href="/favicon.png" />
         <link rel="stylesheet" href="/assets/css/swiper-bundle.min.css" />
-        <link rel="stylesheet" href="/assets/css/main.css" />
+        <link rel="stylesheet" href="/assets/css/main.css?version=2" />
         <link rel="stylesheet" href="/assets/css/stories-slider.css" />
       </Head>
       <body>
