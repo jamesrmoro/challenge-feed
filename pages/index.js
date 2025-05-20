@@ -1119,7 +1119,7 @@ className="aboutProject"
             <div style={{ position: 'relative' }}>
               <input
                 id="chatInput"
-                type="text"
+                type="seed"
                 value={chatInput}
                 onChange={(e) => setChatInput(e.target.value)}
                 placeholder="Type your question..."
