@@ -263,17 +263,34 @@ export default function Home() {
   }
 
   const fetchJams = async () => {
-  setInitialLoading(true); // <--- aqui
-  try {
-    const res = await fetch('/api/result');
-    // ... resto igual
-  } catch (err) {
-    setMessage('Erro ao carregar dados.');
-  } finally {
-    setInitialLoading(false); // <--- aqui
-  }
-};
-
+    try {
+      const res = await fetch('/api/result');
+      let appwriteJams = await res.json();
+      if (!Array.isArray(appwriteJams)) {
+        setMessage('Erro ao carregar dados do Appwrite.');
+        return;
+      }
+      const unique = [];
+      const map = {};
+      for (const jam of appwriteJams) {
+        if (!map[jam.url]) {
+          map[jam.url] = true;
+          unique.push(jam);
+        }
+      }
+      unique.sort((a, b) => {
+        const dateA = parseJamDate(a.contestStart);
+        const dateB = parseJamDate(b.contestStart);
+        if (!dateA && !dateB) return 0;
+        if (!dateA) return 1;
+        if (!dateB) return -1;
+        return dateB - dateA;
+      });
+      setJams(unique);
+    } catch (err) {
+      setMessage('Erro ao carregar dados.');
+    }
+  };
   const updateJams = async () => {
     setLoading(true);
     setMessage('Atualizando...');
