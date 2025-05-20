@@ -719,7 +719,7 @@ export default function Home() {
             </button>
             <h3 className="titleShare">Share</h3>
             <p className="textShare">Choose a network to share on:</p>
-            <div style={{ display: 'flex', justifyContent: 'center', gap: '1rem', marginTop: '1rem' }}>
+            <div style={{ display: 'flex', justifyContent: 'center', gap: '7px', marginTop: '1rem' }}>
               <a href={`https://t.me/share/url?url=${encodeURIComponent(shareUrl)}`} target="_blank" rel="noopener noreferrer">
                 <img src="/assets/icons/telegram.svg" alt="Telegram" style={{ width: '36px' }} />
               </a>
