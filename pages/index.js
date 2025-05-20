@@ -916,16 +916,7 @@ export default function Home() {
           alignItems: 'center',
           zIndex: 9999
         }}>
-          <div style={{
-            background: '#111',
-            color: '#fff',
-            width: '390px',
-            padding: '1.5rem',
-            position: 'relative',
-            border: '1px solid #fff',
-            boxShadow: '0 8px 24px rgba(0,0,0,0.4)',
-            fontFamily: 'system-ui, sans-serif'
-          }}>
+          <div className="modalChat">
             <button
               onClick={() => setChatVisible(false)}
               style={{
