@@ -137,18 +137,13 @@ export default function Home() {
     const fetchLikedPosts = async () => {
       try {
         const res = await fetch('/api/my-likes');
-        const data = await res.json();
-        const newLiked = {};
-        jams.forEach((jam, idx) => {
-          const domain = getRootDomain(new URL(jam.url).hostname);
-          const key = `${domain}-${idx}`;
-          if (data[jam.url]) newLiked[key] = true;
-        });
-        setLikedPosts(newLiked);
+        const data = await res.json(); // { url1: true, url2: true }
+        setLikedPosts(data);
       } catch {}
     };
     fetchLikedPosts();
   }, [jams]);
+
 
   useEffect(() => {
     const stored = localStorage.getItem('savedJams');
@@ -207,33 +202,43 @@ export default function Home() {
     tryInit();
   }, [jams]);
 
-  const toggleLike = async (jam, key) => {
-    if (likeLoading[key]) return;
-    setLikeLoading(prev => ({ ...prev, [key]: true }));
-    try {
-      const res = await fetch('/api/like', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          url: jam.url,
-          title: jam.title,
-          contestStart: jam.contestStart,
-        })
-      });
-      const data = await res.json();
-      const resCounts = await fetch('/api/likes-count');
-      const likeCountsData = await resCounts.json();
-      setLikeCounts(likeCountsData || {});
-      setLikedPosts(prev => ({
-        ...prev,
-        [key]: data.liked
-      }));
-    } catch (err) {
-      alert('Erro ao gravar like!');
-    } finally {
-      setLikeLoading(prev => ({ ...prev, [key]: false }));
-    }
-  };
+  const toggleLike = async (jam) => {
+  const wasLiked = !!likedPosts[jam.url];
+  setLikedPosts(prev => ({ ...prev, [jam.url]: !wasLiked }));
+  setLikeCounts(prev => ({
+    ...prev,
+    [jam.url]: (prev[jam.url] || 0) + (wasLiked ? -1 : 1)
+  }));
+  setLikeLoading(prev => ({ ...prev, [jam.url]: true }));
+
+  try {
+    const res = await fetch('/api/like', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        url: jam.url,
+        title: jam.title,
+        contestStart: jam.contestStart,
+      })
+    });
+    const data = await res.json();
+
+    // (opcional) Re-sincronize aqui se quiser
+    // setLikedPosts(prev => ({ ...prev, [jam.url]: data.liked }));
+  } catch (err) {
+    setLikedPosts(prev => ({ ...prev, [jam.url]: wasLiked }));
+    setLikeCounts(prev => ({
+      ...prev,
+      [jam.url]: (prev[jam.url] || 0) + (wasLiked ? 1 : -1)
+    }));
+    alert('Erro ao gravar like!');
+  } finally {
+    setLikeLoading(prev => ({ ...prev, [jam.url]: false }));
+  }
+};
+
+
+
   const saveJam = (jam) => {
     const already = savedJams.some(j => j.url === jam.url);
     let newSaved;
@@ -525,6 +530,7 @@ export default function Home() {
 
 <div className="demo-posts">
   {visiblePosts.map(({ jam, domain, idx }) => {
+    const isLiked = !!likedPosts[jam.url];
     const image = jam.image?.startsWith('//') ? 'https:' + jam.image : jam.image || '/assets/images/fallback.jpeg';
     const domainClass = getRootDomain(new URL(jam.url).hostname).replace(/\W/g, '-');
     const isSaved = savedJams.some(j => j.url === jam.url);
@@ -561,12 +567,12 @@ export default function Home() {
             </div>
             <button
               className="buttonLike"
-              onClick={() => toggleLike(jam, `${domain}-${idx}`)}
-              disabled={!!likeLoading[`${domain}-${idx}`]}
+              onClick={() => toggleLike(jam)}
+              disabled={!!likeLoading[jam.url]}
               aria-label="Like"
             >
               <div
-                className={`heart${likedPosts[`${domain}-${idx}`] ? ' is-active' : ''}`}
+                className={`heart${isLiked ? ' is-active' : ''}`}
                 style={{
                   pointerEvents: 'none',
                 }}
