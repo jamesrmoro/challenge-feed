@@ -1112,7 +1112,7 @@ className="aboutProject"
                 </div>
               ))}
             </div>
-            <form onSubmit={handleChatSubmit} style={{ position: 'relative' }}>
+            <form autoComplete="off" onSubmit={handleChatSubmit} style={{ position: 'relative' }}>
               <input
                 id="chatInput"
                 type="text"
@@ -1122,7 +1122,7 @@ className="aboutProject"
                 autoComplete="off"
                 autoCorrect="off"
                 spellCheck={false}
-                name="chat-ai"
+                name="message"
                 style={{
                   width: '100%',
                   padding: '0.6rem 3rem 0.6rem 0.6rem',
