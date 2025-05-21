@@ -519,7 +519,23 @@ export default function Home() {
     <>
       <Script src="/assets/js/swiper-bundle.min.js" strategy="beforeInteractive" />
       <Script src="/assets/js/stories-slider.js" strategy="afterInteractive" />
-
+      <Script
+        strategy="afterInteractive"
+        src="https://www.googletagmanager.com/gtag/js?id=G-356GJ1VDJM"
+      />
+      <Script id="gtag-init" strategy="afterInteractive">
+        {`
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('js', new Date());
+          gtag('config', 'G-356GJ1VDJM', {
+            'send_page_view': true,
+            'page_path': window.location.pathname,
+            'page_location': window.location.href,
+            'page_title': document.title
+          });
+        `}
+      </Script>
       {/* BOTÃO FLUTUANTE SUPERIOR DIREITO */}
 <button
 className="aboutProject"
