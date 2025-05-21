@@ -586,7 +586,7 @@ className="aboutProject"
       <p>This project was created for the <a href="https://dev.to/devteam/join-the-bright-data-real-time-ai-agents-challenge-3000-in-prizes-cog?bb=216179" target="_blank">Bright Data Real-Time AI Agents Challenge</a> on dev.to.</p>
       <p>Besides participating in the challenge, this project also serves an educational purpose by showing how to collect, process, and display real-time data using Bright Data.</p>
       <p>For demonstration, only two sites are featured: Itch.io and Dev.to.</p>
-      <p>You can check out the full article about this project on <a href="https://dev.to" target="_blank">dev.to</a>.</p>
+      <p>You can check out the full article about this project on <a href="https://dev.to/jamesrmoro/challenge-feed-real-time-programming-challenges-in-one-place-20bh" target="_blank">dev.to</a>.</p>
     </div>
   </div>
 </div>
