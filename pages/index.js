@@ -24,6 +24,7 @@ export default function Home() {
   const PAGE_SIZE = 15;
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
   const [initialLoading, setInitialLoading] = useState(true);
+  const [showScrollTop, setShowScrollTop] = useState(false);
 
   const [showSidePanel, setShowSidePanel] = useState(false);
 
@@ -35,6 +36,18 @@ export default function Home() {
   const [showLogin, setShowLogin] = useState(false);
 
   const router = useRouter();
+
+  useEffect(() => {
+    const onScroll = () => {
+      setShowScrollTop(window.scrollY > 120);
+    };
+    window.addEventListener('scroll', onScroll);
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
+
+  function scrollToTop() {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
 
   useEffect(() => {
     // Pegue o parâmetro da url (no client-side)
@@ -510,10 +523,10 @@ export default function Home() {
       {/* BOTÃO FLUTUANTE SUPERIOR DIREITO */}
 <button
 className="aboutProject"
-  aria-label="Abrir painel"
+  aria-label="Open panel"
   onClick={() => setShowSidePanel(true)}
 >
-  <img src="/assets/icons/arrow.svg" alt="Abrir painel" />
+  <img src="/assets/icons/arrow.svg" alt="Open panel" />
 </button>
 
 <div
@@ -816,6 +829,37 @@ className="aboutProject"
   )}
 </div>
 
+    {showScrollTop && (
+      <button
+        className="scroll-to-top"
+        onClick={scrollToTop}
+        aria-label="Scroll to top"
+        style={{
+          position: 'fixed',
+          right: 20,
+          bottom: 20,
+          zIndex: 10000,
+          background: 'linear-gradient(135deg, #ffd700, #7e57c2 80%)',
+          color: '#222',
+          border: 'none',
+          borderRadius: '50%',
+          width: 52,
+          height: 52,
+          boxShadow: '0 2px 16px rgba(0,0,0,0.25)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          fontSize: 28,
+          cursor: 'pointer',
+          transition: 'background 0.22s'
+        }}
+      >
+       <svg width="28" height="28" viewBox="0 0 20 20" fill="none"><path d="M10 16V4M10 4L4 10M10 4l6 6" stroke="#222" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+
+      </button>
+    )}
+
+
 
       {shareVisible && (
         <div style={{
@@ -1103,7 +1147,7 @@ className="aboutProject"
               )}
               {chatLog.map((entry, idx) => (
                 <div id="messageChat" key={idx} style={{ marginBottom: '1rem' }}>
-                  <div><strong style={{ color: '#0ff' }}>You:</strong> {entry.question}</div><strong style={{ color: '#f0f0f0' }}>Bot CF:</strong>
+                  <div><strong style={{ color: '#0ff' }}>You:</strong> {entry.question}</div><strong style={{ color: '#ffdc46' }}>Bot Challenge Feed:</strong>
                   <ReactMarkdown
                     components={{
                       a: ({ node, ...props }) => (
@@ -1135,8 +1179,8 @@ className="aboutProject"
                   }
                 }}
                 style={{
-                  width: '100%',
-                  padding: '0.6rem 3rem 0.6rem 0.6rem',
+                  width: '80%',
+                  padding: '10px',
                   borderRadius: '35px',
                   border: '1px solid #333',
                   background: '#222',
